@@ -176,7 +176,7 @@
                 crossDomain: true,
                 dataType: "json",
                 contentType: "application/json",
-                data: JSON.stringify({email, pincode: pins.join(","), district: district, filter_type: filter_type}),
+                data: JSON.stringify({email, pincode: pins, district: district, filter_type: filter_type}),
                 success: function (data) {
                     console.log('Submission was successful.');
                     $("form").hide()
