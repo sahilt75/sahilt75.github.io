@@ -54,7 +54,7 @@
             </div>
             <div class="card-footer" style="display: none;">
                 <h6>You will receive a mail as soon as a slot is available at any center for the given pincode.</h6>
-                <h6>Since slots get booked within seconds or minutes, please visit Aarogya Setu App or <a href="https://www.cowin.gov.in/home"  target="_blank">Cowin Website</a> as soon as you receive a notification.</h6>
+                <h6>As slots get booked within seconds or minutes, please visit Aarogya Setu App or <a href="https://www.cowin.gov.in/home"  target="_blank">Cowin Website</a> as soon as you receive a notification.</h6>
             </div>
         </div>
     </div>
@@ -66,7 +66,6 @@
         var pinRegex =  /^[1-9][0-9]{5}$/
         $("#cowinForm").submit(function(e) {
             e.preventDefault(); 
-            $(".submitBtn").attr('disabled', true);
             $(".alert").hide()
             
             var form = $(this);
@@ -88,6 +87,8 @@
               $(".alert").html("Invalid Pincode")
               return false
             }
+            $(".submitBtn").attr('disabled', true);
+            $(".submitBtn").html("Please wait..")
 
             $.ajax({
                 type: "POST",
