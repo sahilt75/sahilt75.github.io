@@ -7,7 +7,7 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
-
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <title>Cowin Vaccine Notifier</title>
       <style>
 <!--          html {-->
@@ -31,12 +31,29 @@
                 <h4 id="details" style="display: none;">Your details have been registered.</h4>
                 <div class="alert alert-danger" role="alert" style="display: none;">
                 </div>
-                <form id="cowinForm" method="POST" action="https://ag3l4lmj70.execute-api.ap-south-1.amazonaws.com/v1/register">
-                    <div class="form-group">
+                <form id="cowinForm" method="POST" action="https://ag3l4lmj70.execute-api.ap-south-1.amazonaws.com/v1/register" novalidate>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radio-district" value="district">
+                      <label class="form-check-label" for="radio-district">District</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radio-pincode" value="pincode">
+                      <label class="form-check-label" for="radio-pincode">Pincode</label>
+                    </div>
+                    <br>
+                    <br>
+
+                    <div class="form-group pincode_div">
                       <label for="pincode">Enter pin code(s)</label>
                       <input type="text" required class="form-control" id="pincode" aria-describedby="pincodeHelp" placeholder="380015,380007">
                       <small id="pincodeHelp" class="form-text text-muted">You can enter multiple pin codes by separating them with a comma.</small>
                     </div>
+                    <div class="form-group districts_div">
+                      <label for="district">Select District(s)</label>
+                        <select multiple required class="form-control" id="district" aria-describedby="districtHelp"></select>
+                      <small id="districtHelp" class="form-text text-muted">You can select multiple districts.</small>
+                    </div>
+
                     <br>
                     <div class="form-group">
                       <label for="email">Email</label>
@@ -62,31 +79,93 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         var pinRegex =  /^[1-9][0-9]{5}$/
+        var districtsUrl = "https://cowin-districts.s3.ap-south-1.amazonaws.com/districts_data.json"
+        var filter_type = ""
+
+        $(document).ready(function(){
+            $.ajax({
+                url: districtsUrl,
+                type: 'GET',
+                dataType: 'json', // added data type
+                success: function(res) {
+                        options = ""
+                        res.forEach(item=>{
+                            options += `<option value='${item.district_id}'>${item.district_name}</option>`
+                        })
+                         $("#district").html(options).select2({})
+                }
+            });
+            $("input[name='inlineRadioOptions'][value='district']").attr('checked', 'checked');
+            $(".pincode_div").hide()
+            filter_type = "district"
+        });
+
+        $('input[type=radio]').change(function() {
+            if (this.value == 'district') {
+                filter_type = "district"
+                $(".districts_div").show()
+                $(".pincode_div").hide()
+            }
+            else if (this.value == 'pincode') {
+                filter_type = "pincode"
+                $(".districts_div").hide()
+                $(".pincode_div").show()
+            }
+        });
+
         $("#cowinForm").submit(function(e) {
-            e.preventDefault(); 
+            e.preventDefault();
             $(".alert").hide()
-            
-            var form = $(this);
-            var url = form.attr('action');
-            var pincode = $("#pincode").val()
+
+            var pincode = $("#pincode").val();
+            var district = $("#district").val();
             var email = $("#email").val()
 
-            pins = pincode.split(",")
-            error_pin = false
-            pins.forEach(pin=>{
-              pin = pin.trim()
-              if(!pinRegex.test(pin)){
-                error_pin = true;
-              }
-            })
 
-            if(error_pin){
-              $(".alert").show()
-              $(".alert").html("Invalid Pincode")
-              return false
+            if(!email){
+                $(".alert").show()
+                $(".alert").html("Email is required")
+                return false
             }
+
+            if(filter_type == "pincode"){
+                if(!pincode){
+                    $(".alert").show()
+                    $(".alert").html("Pincode is required")
+                    return false
+                }
+
+                pins = pincode.split(",")
+                error_pin = false
+                pins.forEach(pin=>{
+                  pin = pin.trim()
+                  if(!pinRegex.test(pin)){
+                    error_pin = true;
+                  }
+                })
+
+                if(error_pin){
+                  $(".alert").show()
+                  $(".alert").html("Invalid Pincode")
+                  return false
+                }
+                district = []
+            }
+            else{
+                if(!district || district.length == 0){
+                    $(".alert").show()
+                    $(".alert").html("District is required")
+                    return false
+                }
+                pins = []
+            }
+
+            var form = $(this);
+            var url = form.attr('action');
+
             $(".submitBtn").attr('disabled', true);
             $(".submitBtn").html("Please wait..")
 
@@ -97,7 +176,7 @@
                 crossDomain: true,
                 dataType: "json",
                 contentType: "application/json",
-                data: JSON.stringify({email, pincode: pins.join(",")}),
+                data: JSON.stringify({email, pincode: pins.join(","), district: district, filter_type: filter_type}),
                 success: function (data) {
                     console.log('Submission was successful.');
                     $("form").hide()
