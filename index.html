@@ -188,6 +188,8 @@
                     console.log(data.responseJSON)
                     $(".alert").show()
                     $(".alert").html(data.responseJSON.message)
+                    $(".submitBtn").attr('disabled', false);
+                    return false
                 },
             });
             
