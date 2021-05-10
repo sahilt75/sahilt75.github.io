@@ -22,46 +22,64 @@
                 <h4><center>Cowin Vaccine Availability Notifier (18-44)</center></h4>
             </div>
             <div class="card-body">
-                <h4 id="details" style="display: none;">Your details have been registered.</h4>
-                <div class="alert alert-danger" role="alert" style="display: none;">
-                </div>
-                <form id="cowinForm" method="POST" action="https://ag3l4lmj70.execute-api.ap-south-1.amazonaws.com/v1/register" novalidate>
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radio-district" value="district">
-                      <label class="form-check-label" for="radio-district">District</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radio-pincode" value="pincode">
-                      <label class="form-check-label" for="radio-pincode">Pincode</label>
-                    </div>
-                    <br>
-                    <br>
-
-                    <div class="form-group pincode_div">
-                      <label for="pincode">Enter pin code(s)</label>
-                      <input type="text" required class="form-control" id="pincode" aria-describedby="pincodeHelp" placeholder="380015,380007">
-                      <small id="pincodeHelp" class="form-text text-muted">You can enter multiple pin codes by separating them with a comma.</small>
-                    </div>
-                    <div class="form-group districts_div">
-                      <label for="district">Select District(s)</label>
-                        <select multiple required class="form-control" id="district" aria-describedby="districtHelp"></select>
-                      <small id="districtHelp" class="form-text text-muted">You can select multiple districts.</small>
-                    </div>
-
-                    <br>
+              <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="pills-subscribe-tab" data-bs-toggle="pill" data-bs-target="#pills-subscribe" type="button" role="tab" aria-controls="pills-subscribe" aria-selected="true">Subscribe</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="pills-unsubscribe-tab" data-bs-toggle="pill" data-bs-target="#pills-unsubscribe" type="button" role="tab" aria-controls="pills-unsubscribe" aria-selected="false">Unsubscribe</button>
+                </li>
+              </ul>
+              <div class="alert alert-danger" role="alert" style="display: none;">
+              </div>
+              <div class="tab-content" id="pills-tabContent">
+                  <div id="pills-subscribe" class="tab-pane fade show active" role="tabpanel" aria-labelledby="pills-subscribe-tab">
+                    <h4 id="details" style="display: none;">Your details have been registered.</h4>
+                    <form id="cowinForm" method="POST" action="https://ag3l4lmj70.execute-api.ap-south-1.amazonaws.com/v1/register" novalidate>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radio-district" value="district">
+                          <label class="form-check-label" for="radio-district">District</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="radio-pincode" value="pincode">
+                          <label class="form-check-label" for="radio-pincode">Pincode</label>
+                        </div>
+                        <br>
+                        <br>
+    
+                        <div class="form-group pincode_div">
+                          <label for="pincode">Enter pin code(s)</label>
+                          <input type="text" required class="form-control" id="pincode" aria-describedby="pincodeHelp" placeholder="380015,380007">
+                          <small id="pincodeHelp" class="form-text text-muted">You can enter multiple pin codes by separating them with a comma.</small>
+                        </div>
+                        <div class="form-group districts_div">
+                          <label for="district">Select District(s)</label>
+                            <select multiple required class="form-control" id="district" aria-describedby="districtHelp"></select>
+                          <small id="districtHelp" class="form-text text-muted">You can select multiple districts.</small>
+                        </div>
+    
+                        <br>
+                        <div class="form-group">
+                          <label for="email">Email</label>
+                          <input type="email" required class="form-control" id="email" placeholder="Enter email">
+                        </div>
+                        <br>
+                        <button type="submit" class="submitBtn btn btn-success">Notify Me!</button>
+                    </form>
+                  </div>
+                <div id="pills-unsubscribe" class="tab-pane fade" role="tabpanel" aria-labelledby="pills-unsubscribe-tab">
+                  <h4 id="unsubscribeDetails" style="display: none;">Your have been unsubscribed.</h4>
+                  <form id="unsubscribeForm" method="POST" novalidate>
                     <div class="form-group">
-                      <label for="email">Email</label>
-                      <input type="email" required class="form-control" id="email" placeholder="Enter email">
+                      <label for="unsubscribe-email">Email</label>
+                      <input type="email" required class="form-control" id="unsubscribe-email" placeholder="Enter email">
+                      <small style="color: red;">You will stop receiving mails from now on.</small>
                     </div>
                     <br>
-<!--                    <div class="form-group">-->
-<!--                      <label for="phone">Phone</label>-->
-<!--                      <input type="text" class="form-control" id="phone" placeholder="Enter phone (Optional)">-->
-<!--                       <small id="phoneHelp" class="form-text text-muted">SMS/Whatsapp notifications to be integrated soon.</small>-->
-<!--                    </div>-->
-<!--                    <br>-->
-                    <button type="submit" class="submitBtn btn btn-success">Notify Me!</button>
-                </form>
+                    <button type="submit" class="submitBtn btn btn-danger">Stop sending me mails!</button>
+                  </form>
+                </div>
+              </div>
             </div>
             <div class="card-footer" style="display: none;">
                 <h6>You will receive a mail as soon as a slot is available at any center for the given pincode/district.</h6>
@@ -180,7 +198,6 @@
                     $("form").hide()
                     $("#details").show()
                     $(".card-footer").show()
-
                 },
                 error: function (data) {
                     console.log(data.responseJSON)
@@ -194,10 +211,53 @@
             $("#submit").prop('disabled', false);
             return false
         });
+
+        $("#unsubscribeForm").submit(function(e) {
+            e.preventDefault();
+            $(".alert").hide();
+            var unEmail = $("#unsubscribe-email").val()
+            var form = $(this);
+            var url = form.attr('action');
+
+            if(!unEmail){
+                $(".alert").show()
+                $(".alert").html("Email is required")
+                return false
+            }
+            if(!isValidEmailAddress(unEmail)){
+              $(".alert").show()
+              $(".alert").html("Invalid Email")
+              return false
+            }
+
+            $.ajax({
+                type: "PATCH",
+                url: "https://ag3l4lmj70.execute-api.ap-south-1.amazonaws.com/v1/unsubscribe",
+                headers: {'Content-Type': 'application/json'},
+                crossDomain: true,
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({email:unEmail}),
+                success: function (data) {
+                    $("form").hide()
+                    $("#unsubscribeDetails").show()
+                },
+                error: function (data) {
+                    $(".alert").show()
+                    $(".alert").html(data.responseJSON.message)
+                    $(".submitBtn").attr('disabled', false);
+                    return false
+                },
+            });
+            
+        })
+
         function isValidEmailAddress(emailAddress) {
             var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
             return pattern.test(emailAddress);
         }
+
+        
     </script>
   </body>
 </html>
